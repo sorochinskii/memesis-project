@@ -11,7 +11,7 @@ current_dir = os.path.dirname(os.path.realpath(__file__))
 
 if __name__ == '__main__':
     import uvicorn
-    uvicorn.run('__main__:app_main',
+    uvicorn.run('__main__:app',
                 host=f'{settings.HTTP_HOST}',
                 port=settings.HTTP_PORT,
                 reload=True,

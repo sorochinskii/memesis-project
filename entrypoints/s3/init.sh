@@ -9,4 +9,7 @@ if ! bucket_exist ; then
 fi
 ${MC} admin user add memesis $MINIO_USER $MINIO_PASSWORD
 ${MC} admin group add memesis $MINIO_USER_GROUP $MINIO_USER
-${MC} admin policy attach memesis/$MINIO_BUCKET readwrite --group users > /dev/null 2>&1
+${MC} admin policy detach memesis/$MINIO_BUCKET readwrite --group users
+${MC} admin policy detach memesis/$MINIO_BUCKET readwrite --group users
+
+${MC} admin policy attach memesis/$MINIO_BUCKET readwrite --group users
