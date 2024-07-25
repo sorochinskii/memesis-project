@@ -41,6 +41,8 @@ match ENVIRONMENT:
     case _:
         raise Exception('Dot env file not found')
 
+print("SOMESHIT", ENVIRONMENT)
+
 
 class Settings(BaseSettings):
     def __init__(self, env_file):
@@ -65,7 +67,7 @@ class Settings(BaseSettings):
     HTTP_HOST: str = Field()
     UPLOAD_IMAGE_SIZE: int = Field(default=1048576)
     PRIVATE_API_HOST: str = Field('localhost')
-    PRIVATE_API_PORT: str = Field('8002')
+    PRIVATE_API_PORT: str = Field('')
     PRIVATE_API_V1: str = Field('v1')
     MAX_IMAGE_SIZE: int = Field()
     EXIF_REMOVE: int | None = Field(default=None)
@@ -94,3 +96,5 @@ class Settings(BaseSettings):
 
 
 settings = Settings(env_file=env_file)
+
+print("SOMESHIT", settings.DB_PORT)
