@@ -41,8 +41,6 @@ match ENVIRONMENT:
     case _:
         raise Exception('Dot env file not found')
 
-print("SOMESHIT", ENVIRONMENT)
-
 
 class Settings(BaseSettings):
     def __init__(self, env_file):
@@ -96,5 +94,3 @@ class Settings(BaseSettings):
 
 
 settings = Settings(env_file=env_file)
-
-print("SOMESHIT", settings.DB_PORT)
