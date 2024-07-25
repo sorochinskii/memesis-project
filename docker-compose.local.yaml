@@ -1,0 +1,86 @@
+services:
+
+  db:
+    image: postgres:15.6-alpine3.19
+    restart: always
+    container_name: memesis-db
+    healthcheck:
+      test: "pg_isready -h db"
+      interval: 15s
+      timeout: 15s
+      retries: 2
+    ports:
+      - 5435:5432
+    env_file:
+      - path: ./.db.env
+
+  s3:
+    image: minio/minio:latest
+    command: server --console-address ":9001" /data/
+    container_name: minio-1
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 15s
+      timeout: 15s
+      retries: 2
+    env_file:
+      - path: ./.s3.env
+
+  mc:
+    image: minio/mc:latest
+    depends_on:
+    - s3
+    volumes:
+    - ./entrypoints/s3/init.sh:/docker-entrypoint.sh
+    entrypoint:
+    - /bin/sh 
+    - docker-entrypoint.sh
+    env_file:
+        - path: ./.s3.env
+
+  private_api:
+    container_name: private-api
+    restart: always
+    build:
+      dockerfile: ./dockerfiles/private_api/Dockerfile
+    ports:
+      - 8002:8000
+    depends_on:
+      s3:
+        condition: service_healthy
+      mc:
+        condition: service_completed_successfully
+    command: bash -c '
+      cd /code
+      && uvicorn main:app --host 0.0.0.0 --port 8000'
+    env_file:
+      - path: ./.private-api.env
+    environment:
+      ENVIRONMENT: ${ENVIRONMENT}
+    volumes:
+    - ./private_logs/:/code/logs/
+
+
+  public_api:
+    container_name: public-api
+    restart: always
+    build:
+      dockerfile: ./dockerfiles/public_api/Dockerfile
+    ports:
+      - 8001:8000
+    depends_on:
+      db:
+        condition: service_healthy
+    command: bash -c '
+      cd /code
+      && alembic upgrade head
+      && uvicorn main:app --host 0.0.0.0 --port 8000'
+    env_file:
+      - path: ./.public-api.env
+    environment:
+      ENVIRONMENT: ${ENVIRONMENT}
+    volumes:
+    - ./public_logs/:/code/logs/
