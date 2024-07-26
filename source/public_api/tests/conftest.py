@@ -67,7 +67,6 @@ def setup():
     pytest.image_2 = Image(name=pytest.filename_2, size=(300, 300))
     pytest.meme_1 = Meme(name='Some meme', text='Your meme is mine')
     pytest.meme_2 = Meme(name='Other meme')
-    print("SOMESHIT", settings.DB_URL)
     db = postgres.start()
     run_migrations(settings.DB_URL)
 

@@ -11,29 +11,19 @@ from pydantic_settings import BaseSettings
 current_dir = dirname((abspath(__file__))) + '/'
 sys.path.append(current_dir)
 
-TEMPLATE_ENV_FILE: str = '.env.template'
-PROD_ENV_FILE: str = '.env'
 LOCAL_ENV_FILE: str = current_dir+'.local.env'
 LOCAL_TEST_ENV_FILE: str = current_dir+'.local.testing.env'
-TEST_ENV_FILE: str = '.testing.env'
-SOURCE_ENV: str = '.env'
 
 ENVIRONMENT: str | None = getenv('ENVIRONMENT')
 
 
 @dataclass
 class EnvironmentVars:
-    prod: str = 'prod'
     local: str = 'local'
     local_testing: str = 'local_testing'
-    testing: str = 'testing'
 
 
 match ENVIRONMENT:
-    case EnvironmentVars.prod:
-        env_file = find_dotenv(PROD_ENV_FILE, raise_error_if_not_found=True)
-    case EnvironmentVars.testing:
-        env_file = find_dotenv(TEST_ENV_FILE, raise_error_if_not_found=True)
     case EnvironmentVars.local:
         env_file = find_dotenv(LOCAL_ENV_FILE, raise_error_if_not_found=True)
     case EnvironmentVars.local_testing:
